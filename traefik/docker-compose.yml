@@ -1,0 +1,27 @@
+version: '3'
+services:
+  traefik:
+    image: hypriot/rpi-traefik:v1.3.7
+    ports:
+      - 80:80
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.labels.traefik==true
+      labels:
+        - traefik.enable=true
+        - traefik.backend=traefik
+        - traefik.frontend.passHostHeader=true
+        - traefik.docker.network=traefik
+        - traefik.port=8080
+        - traefik.frontend.rule=Host:traefik.cluster
+    command: -c /dev/null --web --docker --docker.swarmmode --docker.watch --docker.domain=cluster --logLevel=DEBUG
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    external: true
