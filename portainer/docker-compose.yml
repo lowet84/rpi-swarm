@@ -1,0 +1,25 @@
+version: '3'
+services:
+  portainer:
+    image: portainer/portainer:arm
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.labels.portainer==true
+      labels:
+        - traefik.enable=true
+        - traefik.backend=portainer
+        - traefik.frontend.passHostHeader=true
+        - traefik.docker.network=traefik
+        - traefik.port=9000
+        - traefik.frontend.rule=Host:portainer.cluster
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /volumes/portainer:/data
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    external: true
